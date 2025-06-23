@@ -91,26 +91,33 @@ public class PlayerController : MonoBehaviour
     private void HandleInteractions()
     {
         Vector3 moveDir = new Vector3(_moveInput.x, 0, _moveInput.y);
-        if (moveDir != Vector3.zero) _lastInteractDir = moveDir;
-        
+        if (moveDir != Vector3.zero)
+            _lastInteractDir = moveDir;
+
         float interactDistance = 2f;
-        if (Physics.Raycast(transform.position, _lastInteractDir, out var hit, interactDistance))
+        float sphereRadius = 0.5f;
+
+        if (Physics.SphereCast(transform.position, sphereRadius, _lastInteractDir, out RaycastHit hit, interactDistance))
         {
             if (hit.collider.TryGetComponent(out ClearCounter clearCounter))
             {
                 if (_selectedCounter != clearCounter)
                 {
                     SetSelectedCounter(clearCounter);
-                    // if (Input.GetKeyDown(KeyCode.Space))
-                    // {
-                    //     clearCounter.Interact();
-                    // }
+                    clearCounter.Interact();
                 }
             }
-            else SetSelectedCounter(null);
+            else
+            {
+                SetSelectedCounter(null);
+            }
         }
-        else SetSelectedCounter(null);
+        else
+        {
+            SetSelectedCounter(null);
+        }
     }
+
 
     private void SetSelectedCounter(ClearCounter clearCounter)
     {

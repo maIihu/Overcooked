@@ -5,12 +5,12 @@ using UnityEngine;
 
 public class ClearCounter : MonoBehaviour
 {
-   // [SerializeField] private KitchenOjbectSO kitchen;
+    [SerializeField] private KitchenObjectSO kitchen;
     [SerializeField] private Transform counterTopPoint;
     
     public void Interact()
     {
         Debug.Log("Interacting...");   
-       //    Instantiate(kitchen.prefab, counterTopPoint.position, Quaternion.identity);
+        Instantiate(kitchen.prefab, counterTopPoint.position, Quaternion.identity);
     }
 }
