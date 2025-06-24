@@ -3,14 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour, IKitchenObjectParent
 {
     public static PlayerController Instance { get; private set; }
 
     public event EventHandler<OnSelectedCounterChangedEventArgs> OnSelectedCounterChanged;
     public class OnSelectedCounterChangedEventArgs : EventArgs
     {
-        public ClearCounter SelectedCounter;
+        public BaseCounter SelectedCounter;
     }
     
     [SerializeField] private float moveSpeed = 7f;
@@ -21,17 +21,16 @@ public class PlayerController : MonoBehaviour
     private Vector2 _moveInput;
     private Vector3 _lastInteractDir;
     private Animator _anim;
-    private ClearCounter _selectedCounter;
+    private BaseCounter _selectedCounter;
+    private Transform _handPoint;
+    private KitchenObject _kitchenObject;
 
     private void Awake()
     {
-        _anim = GetComponentInChildren<Animator>();
-        if (Instance != null)
-        {
-            Debug.Log("Have Player");
-        }
-
+        if (Instance != null) Debug.Log("Have Player");
         Instance = this;
+        _anim = GetComponentInChildren<Animator>();
+        _handPoint = transform.Find("HandPoint");
     }
 
     private void Update()
@@ -42,6 +41,10 @@ public class PlayerController : MonoBehaviour
         HandleInteractions();
     }
 
+
+
+    #region Move
+    
     private void InputHandler()
     {
         _moveInput = Vector2.zero;
@@ -56,7 +59,6 @@ public class PlayerController : MonoBehaviour
     {
         _anim.SetBool(ContainString.IsWalking, _moveInput != Vector2.zero);
     }
-    
     private void Move()
     {
         Vector3 moveDir = new Vector3(_moveInput.x, 0, _moveInput.y);
@@ -88,6 +90,11 @@ public class PlayerController : MonoBehaviour
                 Time.deltaTime * rotateSpeed);
     }
 
+
+    #endregion
+
+    #region Interactions
+
     private void HandleInteractions()
     {
         Vector3 moveDir = new Vector3(_moveInput.x, 0, _moveInput.y);
@@ -99,13 +106,11 @@ public class PlayerController : MonoBehaviour
 
         if (Physics.SphereCast(transform.position, sphereRadius, _lastInteractDir, out RaycastHit hit, interactDistance))
         {
-            if (hit.collider.TryGetComponent(out ClearCounter clearCounter))
+            if (hit.collider.TryGetComponent(out BaseCounter clearCounter))
             {
-                if (_selectedCounter != clearCounter)
-                {
-                    SetSelectedCounter(clearCounter);
-                    clearCounter.Interact();
-                }
+                if (_selectedCounter != clearCounter) SetSelectedCounter(clearCounter);
+                
+                if (Input.GetKeyDown(KeyCode.Space)) clearCounter.Interact(this);
             }
             else
             {
@@ -119,11 +124,38 @@ public class PlayerController : MonoBehaviour
     }
 
 
-    private void SetSelectedCounter(ClearCounter clearCounter)
+    private void SetSelectedCounter(BaseCounter baseCounter)
     {
-        _selectedCounter = clearCounter;
+        _selectedCounter = baseCounter;
         OnSelectedCounterChanged?.Invoke(this, new OnSelectedCounterChangedEventArgs{
             SelectedCounter = _selectedCounter
         });
+    }
+
+    #endregion
+
+    public Transform GetKitchenObjectToTransform()
+    {
+        return this._handPoint;
+    }
+
+    public void SetKitchenObject(KitchenObject kitchenObject)
+    {
+        this._kitchenObject =  kitchenObject;
+    }
+
+    public KitchenObject GetKitchenObject()
+    {
+        return  this._kitchenObject;
+    }
+
+    public void ClearKitchenObject()
+    {
+        this._kitchenObject = null;
+    }
+
+    public bool HasKitchenObject()
+    {
+        return this._kitchenObject != null;
     }
 }
