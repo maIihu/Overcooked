@@ -7,4 +7,7 @@ public static class ContainString
     // Container Counter anim
     public const string OpenClose = "OpenClose";
     
+    // Cutting Counter anim
+    public const string Cut = "Cut";
+    
 }

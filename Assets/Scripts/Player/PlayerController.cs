@@ -113,14 +113,13 @@ public class PlayerController : MonoBehaviour, IKitchenObjectParent
                 
                 if (Input.GetKeyDown(KeyCode.Space)) baseCounter.Interact(this);
 
-                if (Input.GetKeyDown(KeyCode.R)) baseCounter.InteractAlternate(this);
+                if (Input.GetKey(KeyCode.R)) baseCounter.InteractAlternate(this);
             }
             else SetSelectedCounter(null);
         }
         else SetSelectedCounter(null);
     }
-
-
+    
     private void SetSelectedCounter(BaseCounter baseCounter)
     {
         _selectedCounter = baseCounter;
