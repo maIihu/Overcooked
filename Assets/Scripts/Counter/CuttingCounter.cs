@@ -4,16 +4,17 @@ using UnityEngine;
 
 public class CuttingCounter : BaseCounter, IKitchenObjectParent
 {
-    [SerializeField] private KitchenObjectSO cutKitchenObjectSO;
+    [SerializeField] private CuttingRecipeSO[] cuttingRecipeSOArray;
     private KitchenObject _kitchenObject;
 
     public override void Interact(PlayerController player)
     { 
         base.Interact(player);
 
-        if (!player.HasKitchenObject() && HasKitchenObject())
+        if (HasKitchenObject())
         {
-            _kitchenObject.SetKitchenObjectParent(player);
+            if(!player.HasKitchenObject())
+                _kitchenObject.SetKitchenObjectParent(player);
         }
     }
     
@@ -22,9 +23,23 @@ public class CuttingCounter : BaseCounter, IKitchenObjectParent
         base.InteractAlternate(player);
         if (player.HasKitchenObject())
         {
-            player.GetKitchenObject().DestroySelf();
-            KitchenObject.SpawnKitchenObject(cutKitchenObjectSO, this);
+            KitchenObjectSO kitchenObjectSO = GetOutputForInput(player.GetKitchenObject().GetKitchenObjectSO);
+            if(kitchenObjectSO && kitchenObjectSO != player.GetKitchenObject().GetKitchenObjectSO)
+            {
+                player.GetKitchenObject().DestroySelf();
+                KitchenObject.SpawnKitchenObject(kitchenObjectSO, this);
+            }
         }
+    }
+
+    private KitchenObjectSO GetOutputForInput(KitchenObjectSO kitchenObjectSO)
+    {
+        foreach (var cuttingRecipeSo in cuttingRecipeSOArray)
+        {
+            if(cuttingRecipeSo.input == kitchenObjectSO) 
+                return cuttingRecipeSo.output;
+        }
+        return null;
     }
     
     public Transform GetKitchenObjectToTransform()

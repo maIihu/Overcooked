@@ -10,7 +10,7 @@ public class ClearCounter : BaseCounter, IKitchenObjectParent
         base.Interact(player);
         
         if (!player.HasKitchenObject() && HasKitchenObject())
-        { // player covering kitchen obj
+        { // player carrying kitchen obj
             _kitchenObject.SetKitchenObjectParent(player);
         }
         else if(player.HasKitchenObject())
