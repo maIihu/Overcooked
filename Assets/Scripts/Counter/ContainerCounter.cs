@@ -19,7 +19,7 @@ public class ContainerCounter : BaseCounter
     {
         if (!player.HasKitchenObject())
         {
-            _ani.SetTrigger("OpenClose");
+            _ani.SetTrigger(ContainString.OpenClose);
             KitchenObject.SpawnKitchenObject(kitchenObjectSO, player);
         }
     }

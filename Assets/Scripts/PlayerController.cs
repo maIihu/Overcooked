@@ -104,27 +104,20 @@ public class PlayerController : MonoBehaviour, IKitchenObjectParent
         float interactDistance = 2f;
         float sphereRadius = 0.5f;
 
-        if (Physics.SphereCast(transform.position, sphereRadius, _lastInteractDir, out RaycastHit hit, interactDistance))
+        if (Physics.SphereCast(transform.position, sphereRadius, 
+                _lastInteractDir, out RaycastHit hit, interactDistance))
         {
-            if (hit.collider.TryGetComponent(out BaseCounter clearCounter))
+            if (hit.collider.TryGetComponent(out BaseCounter baseCounter))
             {
-                if (_selectedCounter != clearCounter) SetSelectedCounter(clearCounter);
+                if (_selectedCounter != baseCounter) SetSelectedCounter(baseCounter);
                 
-                if (Input.GetKeyDown(KeyCode.Space))
-                {
-                    clearCounter.InteractAlternate(this);
-                    clearCounter.Interact(this);
-                }
+                if (Input.GetKeyDown(KeyCode.Space)) baseCounter.Interact(this);
+
+                if (Input.GetKeyDown(KeyCode.R)) baseCounter.InteractAlternate(this);
             }
-            else
-            {
-                SetSelectedCounter(null);
-            }
+            else SetSelectedCounter(null);
         }
-        else
-        {
-            SetSelectedCounter(null);
-        }
+        else SetSelectedCounter(null);
     }
 
 
