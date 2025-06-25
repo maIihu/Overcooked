@@ -3,13 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class BaseCounter : MonoBehaviour
+public class BaseCounter : MonoBehaviour
 {
     private GameObject _visualGameObject;
 
     protected Transform CounterTopPoint;
 
-    private void Awake()
+    protected virtual void Awake()
     {
         _visualGameObject = transform.Find("Selected").gameObject;
         CounterTopPoint = transform.Find("CounterTopPoint").transform;
@@ -41,6 +41,14 @@ public abstract class BaseCounter : MonoBehaviour
     {
         _visualGameObject.SetActive(false);
     }
-    
-    public abstract void Interact(PlayerController player);
+
+    public virtual void Interact(PlayerController player)
+    {
+        //Debug.Log("Interact " + this.name);
+    }
+
+    public virtual void InteractAlternate(PlayerController player)
+    {
+       // Debug.Log("Interact Alternate " + this.name);
+    }
 }

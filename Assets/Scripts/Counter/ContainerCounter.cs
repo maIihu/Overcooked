@@ -5,15 +5,23 @@ using UnityEngine;
 public class ContainerCounter : BaseCounter
 {
     [SerializeField] private KitchenObjectSO kitchenObjectSO;
+    private Animator _ani;
+
+    protected override void Awake()
+    {
+        base.Awake();
+        _ani = GetComponentInChildren<Animator>();
+
+    }
+    
+    
     public override void Interact(PlayerController player)
     {
-        if (player.HasKitchenObject())
+        if (!player.HasKitchenObject())
         {
-            Debug.Log("Player has kitchen");
-            return;
+            _ani.SetTrigger("OpenClose");
+            KitchenObject.SpawnKitchenObject(kitchenObjectSO, player);
         }
-        var newKitchenObject = Instantiate(kitchenObjectSO.prefab);
-        newKitchenObject.GetComponent<KitchenObject>().SetKitchenObjectParent(player);
     }
     
     

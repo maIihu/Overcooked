@@ -2,20 +2,28 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ClearCounter : BaseCounter, IKitchenObjectParent
+public class CuttingCounter : BaseCounter, IKitchenObjectParent
 {
+    [SerializeField] private KitchenObjectSO cutKitchenObjectSO;
     private KitchenObject _kitchenObject;
+
     public override void Interact(PlayerController player)
     { 
         base.Interact(player);
-        
+
         if (!player.HasKitchenObject() && HasKitchenObject())
-        { // player covering kitchen obj
+        {
             _kitchenObject.SetKitchenObjectParent(player);
         }
-        else if(player.HasKitchenObject())
+    }
+    
+    public override void InteractAlternate(PlayerController player)
+    {
+        base.InteractAlternate(player);
+        if (player.HasKitchenObject())
         {
-            player.GetKitchenObject().SetKitchenObjectParent(this);
+            player.GetKitchenObject().DestroySelf();
+            KitchenObject.SpawnKitchenObject(cutKitchenObjectSO, this);
         }
     }
     

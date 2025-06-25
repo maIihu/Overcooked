@@ -110,7 +110,11 @@ public class PlayerController : MonoBehaviour, IKitchenObjectParent
             {
                 if (_selectedCounter != clearCounter) SetSelectedCounter(clearCounter);
                 
-                if (Input.GetKeyDown(KeyCode.Space)) clearCounter.Interact(this);
+                if (Input.GetKeyDown(KeyCode.Space))
+                {
+                    clearCounter.InteractAlternate(this);
+                    clearCounter.Interact(this);
+                }
             }
             else
             {
