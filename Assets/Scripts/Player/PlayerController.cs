@@ -40,9 +40,7 @@ public class PlayerController : MonoBehaviour, IKitchenObjectParent
         Move();
         HandleInteractions();
     }
-
-
-
+    
     #region Move
     
     private void InputHandler()
