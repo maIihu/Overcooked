@@ -17,11 +17,11 @@ public class BaseCounter : MonoBehaviour
 
     private void Start()
     {
-        PlayerController.Instance.OnSelectedCounterChanged += PlayerChangeSelected;
+        Player.Instance.OnSelectedCounterChanged += PlayerChangeSelected;
         Hide();
     }
     
-    private void PlayerChangeSelected(object sender, PlayerController.OnSelectedCounterChangedEventArgs e)
+    private void PlayerChangeSelected(object sender, Player.OnSelectedCounterChangedEventArgs e)
     {
         if (e.SelectedCounter == this)
         {
@@ -42,12 +42,12 @@ public class BaseCounter : MonoBehaviour
         _visualGameObject.SetActive(false);
     }
 
-    public virtual void Interact(PlayerController player)
+    public virtual void Interact(Player player)
     {
         //Debug.Log("Interact " + this.name);
     }
 
-    public virtual void InteractAlternate(PlayerController player)
+    public virtual void InteractAlternate(Player player)
     {
        // Debug.Log("Interact Alternate " + this.name);
     }

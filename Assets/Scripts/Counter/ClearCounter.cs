@@ -5,7 +5,7 @@ using UnityEngine;
 public class ClearCounter : BaseCounter, IKitchenObjectParent
 {
     private KitchenObject _kitchenObject;
-    public override void Interact(PlayerController player)
+    public override void Interact(Player player)
     { 
         base.Interact(player);
         
@@ -20,6 +20,8 @@ public class ClearCounter : BaseCounter, IKitchenObjectParent
                 player.GetKitchenObject().SetKitchenObjectParent(this);
         }
     }
+    
+    #region IKitchenObjectParent
     
     public Transform GetKitchenObjectToTransform()
     {
@@ -45,4 +47,5 @@ public class ClearCounter : BaseCounter, IKitchenObjectParent
     {
         return this._kitchenObject != null;
     }
+    #endregion
 }

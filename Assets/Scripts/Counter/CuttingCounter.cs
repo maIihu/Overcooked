@@ -22,7 +22,7 @@ public class CuttingCounter : BaseCounter, IKitchenObjectParent
         _ani = GetComponentInChildren<Animator>();
     }
 
-    public override void Interact(PlayerController player)
+    public override void Interact(Player player)
     { 
         base.Interact(player);
 
@@ -45,7 +45,7 @@ public class CuttingCounter : BaseCounter, IKitchenObjectParent
         }
     }
     
-    public override void InteractAlternate(PlayerController player)
+    public override void InteractAlternate(Player player)
     {
         base.InteractAlternate(player);
         if (HasKitchenObject())
@@ -83,7 +83,9 @@ public class CuttingCounter : BaseCounter, IKitchenObjectParent
         }
         return null;
     }
-    
+
+    #region IKitchenObjectParent
+
     public Transform GetKitchenObjectToTransform()
     {
         return CounterTopPoint;
@@ -108,4 +110,8 @@ public class CuttingCounter : BaseCounter, IKitchenObjectParent
     {
         return this._kitchenObject != null;
     }
+
+    #endregion
+    
+
 }

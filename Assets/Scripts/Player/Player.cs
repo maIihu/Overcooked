@@ -3,9 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour, IKitchenObjectParent
+public class Player : MonoBehaviour, IKitchenObjectParent
 {
-    public static PlayerController Instance { get; private set; }
+    public static Player Instance { get; private set; }
 
     public event EventHandler<OnSelectedCounterChangedEventArgs> OnSelectedCounterChanged;
     public class OnSelectedCounterChangedEventArgs : EventArgs
@@ -15,8 +15,6 @@ public class PlayerController : MonoBehaviour, IKitchenObjectParent
     
     [SerializeField] private float moveSpeed = 7f;
     [SerializeField] private float rotateSpeed = 10f;
-    [SerializeField] private float playerHeight = 2f;
-    [SerializeField] private float playerRadius = 0.7f;
     
     private Vector2 _moveInput;
     private Vector3 _lastInteractDir;
@@ -59,6 +57,9 @@ public class PlayerController : MonoBehaviour, IKitchenObjectParent
     }
     private void Move()
     {
+        float playerHeight = 2f;
+        float playerRadius = 0.7f;
+        
         Vector3 moveDir = new Vector3(_moveInput.x, 0, _moveInput.y);
         float moveDistance = moveSpeed  * Time.deltaTime;
         
@@ -128,6 +129,8 @@ public class PlayerController : MonoBehaviour, IKitchenObjectParent
 
     #endregion
 
+    #region IKitchenObjectParent
+
     public Transform GetKitchenObjectToTransform()
     {
         return this._handPoint;
@@ -152,4 +155,7 @@ public class PlayerController : MonoBehaviour, IKitchenObjectParent
     {
         return this._kitchenObject != null;
     }
+
+    #endregion
+
 }
