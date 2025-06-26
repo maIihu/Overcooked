@@ -68,6 +68,11 @@ public class CuttingCounter : BaseCounter, IKitchenObjectParent
         }
     }
 
+    public void StopAnimationCut()
+    {
+        _ani.SetBool(ContainString.Cut, false);
+    }
+
     private KitchenObjectSO GetOutputForInput(KitchenObjectSO kitchenObjectSO)
     {
         var cuttingRecipeSO = GetCuttingRecipeSOForInput(kitchenObjectSO);

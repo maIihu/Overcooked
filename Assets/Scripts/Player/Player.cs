@@ -23,6 +23,10 @@ public class Player : MonoBehaviour, IKitchenObjectParent
     private Transform _handPoint;
     private KitchenObject _kitchenObject;
 
+    private CuttingCounter _currentCuttingCounter;
+    private bool _isCutting;
+    private Coroutine _cutCoroutine;
+    
     private void Awake()
     {
         if (Instance != null) Debug.Log("Have Player");
@@ -37,6 +41,10 @@ public class Player : MonoBehaviour, IKitchenObjectParent
         UpdateAnimation();
         Move();
         HandleInteractions();
+        if (_moveInput != Vector2.zero && _isCutting)
+        {
+            StopCutting();
+        }
     }
     
     #region Move
@@ -111,8 +119,14 @@ public class Player : MonoBehaviour, IKitchenObjectParent
                 if (_selectedCounter != baseCounter) SetSelectedCounter(baseCounter);
                 
                 if (Input.GetKeyDown(KeyCode.Space)) baseCounter.Interact(this);
-
-                if (Input.GetKey(KeyCode.R)) baseCounter.InteractAlternate(this);
+                
+                if (Input.GetKeyDown(KeyCode.R) && _moveInput == Vector2.zero)
+                {
+                    if(baseCounter is  CuttingCounter cuttingCounter)
+                        StartCutting(cuttingCounter);
+                }
+                
+                //if (Input.GetKey(KeyCode.R)) baseCounter.InteractAlternate(this);
             }
             else SetSelectedCounter(null);
         }
@@ -129,6 +143,44 @@ public class Player : MonoBehaviour, IKitchenObjectParent
 
     #endregion
 
+    #region Cutting
+
+    private IEnumerator CutRoutine()
+    {
+        while (_isCutting && _currentCuttingCounter != null)
+        {
+            if (_moveInput != Vector2.zero)
+            {
+                StopCutting();
+                yield break;
+            }
+            _currentCuttingCounter.InteractAlternate(this);
+            yield return null;
+        }
+    }
+
+    private void StartCutting(CuttingCounter counter)
+    {
+        _isCutting = true;
+        _currentCuttingCounter = counter;
+        _cutCoroutine = StartCoroutine(CutRoutine());
+    }
+
+    private void StopCutting()
+    {
+        _isCutting = false;
+        _currentCuttingCounter.StopAnimationCut();
+        _currentCuttingCounter = null;
+        if (_cutCoroutine != null)
+        {
+            StopCoroutine(_cutCoroutine);
+            _cutCoroutine = null;
+        }
+    }
+
+    #endregion
+
+    
     #region IKitchenObjectParent
 
     public Transform GetKitchenObjectToTransform()
