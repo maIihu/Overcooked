@@ -6,7 +6,7 @@ public class KitchenObject : MonoBehaviour
 {
     [SerializeField] private KitchenObjectSO kitchen;
     
-    private IKitchenObjectParent _kitchenObjectParent;
+    protected IKitchenObjectParent KitchenObjectParent;
 
     public void SetKitchenObjectParent(IKitchenObjectParent kitchenObjectParent)
     {
@@ -15,9 +15,9 @@ public class KitchenObject : MonoBehaviour
             Debug.Log("KitchenObject has been set");
             return;
         }
-        if (this._kitchenObjectParent != null) _kitchenObjectParent.ClearKitchenObject();
+        if (this.KitchenObjectParent != null) KitchenObjectParent.ClearKitchenObject();
         
-        this._kitchenObjectParent = kitchenObjectParent;
+        this.KitchenObjectParent = kitchenObjectParent;
         kitchenObjectParent.SetKitchenObject(this);
         transform.parent = kitchenObjectParent.GetKitchenObjectToTransform();
         transform.localPosition = Vector3.zero;
@@ -25,21 +25,21 @@ public class KitchenObject : MonoBehaviour
 
     public IKitchenObjectParent GetKitchenObjectParent()
     {
-        return this._kitchenObjectParent;
+        return this.KitchenObjectParent;
     }
 
     public void DestroySelf()
     {
-        _kitchenObjectParent.ClearKitchenObject();
+        KitchenObjectParent.ClearKitchenObject();
         Destroy(this.gameObject);
     }
 
-    public static KitchenObject SpawnKitchenObject(KitchenObjectSO kitchenObjectSO, IKitchenObjectParent kitchenObjectParent)
+    public static void SpawnKitchenObject(KitchenObjectSO kitchenObjectSO, IKitchenObjectParent kitchenObjectParent)
     {
         Transform newKitchenObject = Instantiate(kitchenObjectSO.prefab);
-        KitchenObject kitchenObject = newKitchenObject.GetComponent<KitchenObject>();
+        newKitchenObject.TryGetComponent(out KitchenObject kitchenObject);
         kitchenObject.SetKitchenObjectParent(kitchenObjectParent);
-        return kitchenObject;
+       // return kitchenObject;
     }
     
     public KitchenObjectSO GetKitchenObjectSO => kitchen;

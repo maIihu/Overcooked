@@ -15,7 +15,7 @@ public class BaseCounter : MonoBehaviour
         CounterTopPoint = transform.Find("CounterTopPoint").transform;
     }
 
-    private void Start()
+    protected virtual void Start()
     {
         Player.Instance.OnSelectedCounterChanged += PlayerChangeSelected;
         Hide();

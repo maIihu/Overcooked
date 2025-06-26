@@ -3,14 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CuttingCounter : BaseCounter, IKitchenObjectParent
+public class CuttingCounter : BaseCounter, IKitchenObjectParent, IHasProgress
 {
-    public event EventHandler<OnProgressBarChangedEventArgs> OnProgressBarChanged;
-    public class OnProgressBarChangedEventArgs : EventArgs
-    {
-        public float progressNormalized;
-    }
-    
+    public event EventHandler<IHasProgress.OnProgressBarChangedEventArgs> OnProgressBarChanged;
+
     [SerializeField] private CuttingRecipeSO[] cuttingRecipeSOArray;
     private KitchenObject _kitchenObject;
     private float _cuttingProgress;
@@ -28,19 +24,30 @@ public class CuttingCounter : BaseCounter, IKitchenObjectParent
 
         if (HasKitchenObject())
         {
-            if(!player.HasKitchenObject())
+            if(!GetCuttingRecipeSOForInput(_kitchenObject.GetKitchenObjectSO))
             {
-                _kitchenObject.SetKitchenObjectParent(player);
+                if(!player.HasKitchenObject())
+                {
+                    _kitchenObject.SetKitchenObjectParent(player);
+                }
+                else
+                {
+                    if (player.GetKitchenObject() is PlateKitchenObject plateKitchenObject)
+                    {
+                        if(plateKitchenObject.TryAddIngredient(GetKitchenObject().GetKitchenObjectSO))
+                            GetKitchenObject().DestroySelf();
+                    }
+                }
             }
         }
         else
         {
-            if (player.HasKitchenObject())
-            {
+            if (player.HasKitchenObject() && GetCuttingRecipeSOForInput(player.GetKitchenObject().GetKitchenObjectSO))
+            { // cut
                 player.GetKitchenObject().SetKitchenObjectParent(this);
                 _cuttingProgress = 0;
                 OnProgressBarChanged?.Invoke(this, 
-                    new OnProgressBarChangedEventArgs() { progressNormalized = 0 });
+                    new IHasProgress.OnProgressBarChangedEventArgs() { progressNormalized = 0 });
             }
         }
     }
@@ -56,9 +63,9 @@ public class CuttingCounter : BaseCounter, IKitchenObjectParent
                 _cuttingProgress += Time.deltaTime;
                 _ani.SetBool(ContainString.Cut, true);
                 OnProgressBarChanged?.Invoke(this, 
-                    new OnProgressBarChangedEventArgs() 
-                        { progressNormalized = _cuttingProgress/cuttingRecipe.cuttingProgressMax });
-                if (_cuttingProgress >= cuttingRecipe.cuttingProgressMax)
+                    new IHasProgress.OnProgressBarChangedEventArgs() 
+                        { progressNormalized = _cuttingProgress/cuttingRecipe.cuttingTimerMax });
+                if (_cuttingProgress >= cuttingRecipe.cuttingTimerMax)
                 {
                     _ani.SetBool(ContainString.Cut, false);
                     GetKitchenObject().DestroySelf();
@@ -72,12 +79,7 @@ public class CuttingCounter : BaseCounter, IKitchenObjectParent
     {
         _ani.SetBool(ContainString.Cut, false);
     }
-
-    private KitchenObjectSO GetOutputForInput(KitchenObjectSO kitchenObjectSO)
-    {
-        var cuttingRecipeSO = GetCuttingRecipeSOForInput(kitchenObjectSO);
-        return cuttingRecipeSO ? cuttingRecipeSO.output : null;
-    }
+    
     
     private CuttingRecipeSO GetCuttingRecipeSOForInput(KitchenObjectSO kitchenObjectSO)
     {
@@ -117,6 +119,6 @@ public class CuttingCounter : BaseCounter, IKitchenObjectParent
     }
 
     #endregion
-    
+
 
 }
