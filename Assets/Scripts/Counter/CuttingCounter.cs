@@ -8,6 +8,7 @@ public class CuttingCounter : BaseCounter, IKitchenObjectParent, IHasProgress
     public event EventHandler<IHasProgress.OnProgressBarChangedEventArgs> OnProgressBarChanged;
 
     [SerializeField] private CuttingRecipeSO[] cuttingRecipeSOArray;
+    
     private KitchenObject _kitchenObject;
     private float _cuttingProgress;
     private Animator _ani;
