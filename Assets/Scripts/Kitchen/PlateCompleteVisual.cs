@@ -10,9 +10,16 @@ public class PlateCompleteVisual : MonoBehaviour
     {
         public KitchenObjectSO KitchenObject;
         public GameObject GameObject;
+        public Sprite InputSprite;
     }
 
     [SerializeField] private List<KitchenObjectSO_GameObject> kitchenObjectSoGameObjects;
+
+
+    private void Awake()
+    {
+
+    }
 
     private void Start()
     {

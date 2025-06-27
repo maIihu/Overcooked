@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using UnityEngine;
 
 public class PlateKitchenObject : KitchenObject
@@ -9,10 +10,13 @@ public class PlateKitchenObject : KitchenObject
     
     private List<KitchenObjectSO> _kitchenObjectSOs;
     private PlateCompleteVisual _plateVisual;
+    private PlateIconUI _plateIconUI;
 
     private void Awake()
     {
         _plateVisual = GetComponentInChildren<PlateCompleteVisual>();
+        _plateIconUI = GetComponentInChildren<PlateIconUI>();
+
     }
 
     private void Start()
@@ -27,6 +31,12 @@ public class PlateKitchenObject : KitchenObject
         
         _kitchenObjectSOs.Add(kitchenObjectSO);
         _plateVisual.AddKitchenObjectVisual(kitchenObjectSO);
+        _plateIconUI.UpdateVisualIcon();
         return true;
+    }
+
+    public List<KitchenObjectSO> GetKitchenObjectSOs()
+    {
+        return _kitchenObjectSOs;
     }
 }
