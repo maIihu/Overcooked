@@ -36,7 +36,9 @@ public class CuttingCounter : BaseCounter, IKitchenObjectParent, IHasProgress
                     if (player.GetKitchenObject() is PlateKitchenObject plateKitchenObject)
                     {
                         if(plateKitchenObject.TryAddIngredient(GetKitchenObject().GetKitchenObjectSO))
+                        {
                             GetKitchenObject().DestroySelf();
+                        }
                     }
                 }
             }
@@ -46,6 +48,7 @@ public class CuttingCounter : BaseCounter, IKitchenObjectParent, IHasProgress
             if (player.HasKitchenObject() && GetCuttingRecipeSOForInput(player.GetKitchenObject().GetKitchenObjectSO))
             { // cut
                 player.GetKitchenObject().SetKitchenObjectParent(this);
+                SoundManagerScript.PlaySound(SoundManagerScript.GetAudioClipRefesSO().objectDrop, this.transform.position);
                 _cuttingProgress = 0;
                 OnProgressBarChanged?.Invoke(this, 
                     new IHasProgress.OnProgressBarChangedEventArgs() { progressNormalized = 0 });
@@ -62,7 +65,6 @@ public class CuttingCounter : BaseCounter, IKitchenObjectParent, IHasProgress
             if (cuttingRecipe)
             {
                 _cuttingProgress += Time.deltaTime;
-                _ani.SetBool(ContainString.Cut, true);
                 OnProgressBarChanged?.Invoke(this, 
                     new IHasProgress.OnProgressBarChangedEventArgs() 
                         { progressNormalized = _cuttingProgress/cuttingRecipe.cuttingTimerMax });
@@ -76,11 +78,16 @@ public class CuttingCounter : BaseCounter, IKitchenObjectParent, IHasProgress
         }
     }
 
+    public void CuttingSoundAndAnimation()
+    {
+        _ani.SetBool(ContainString.Cut, true);
+        SoundManagerScript.PlaySound(SoundManagerScript.GetAudioClipRefesSO().chop, this.transform.position);
+    }
+    
     public void StopAnimationCut()
     {
         _ani.SetBool(ContainString.Cut, false);
     }
-    
     
     private CuttingRecipeSO GetCuttingRecipeSOForInput(KitchenObjectSO kitchenObjectSO)
     {

@@ -93,8 +93,12 @@ public class Player : MonoBehaviour, IKitchenObjectParent
             0, canMoveZ ? moveDirZ.z : 0);
         
         if (finalMove != Vector3.zero)
-            transform.forward = Vector3.Slerp(transform.forward, finalMove.normalized, 
+        {
+            transform.forward = Vector3.Slerp(transform.forward, finalMove.normalized,
                 Time.deltaTime * rotateSpeed);
+            SoundManager.Instance.PlaySound(SoundManager.Instance.GetAudioClipRefesSO().footstep, transform.position);
+        }
+       
     }
 
 
@@ -118,7 +122,11 @@ public class Player : MonoBehaviour, IKitchenObjectParent
             {
                 if (_selectedCounter != baseCounter) SetSelectedCounter(baseCounter);
                 
-                if (Input.GetKeyDown(KeyCode.Space)) baseCounter.Interact(this);
+                if (Input.GetKeyDown(KeyCode.Space))
+                {
+                    baseCounter.Interact(this);
+                    SoundManager.Instance.PlaySound(SoundManager.Instance.GetAudioClipRefesSO().objectPickup, this.transform.position);
+                }
                 
                 if (Input.GetKeyDown(KeyCode.R) && _moveInput == Vector2.zero)
                 {
@@ -163,6 +171,7 @@ public class Player : MonoBehaviour, IKitchenObjectParent
     {
         _isCutting = true;
         _currentCuttingCounter = counter;
+        _currentCuttingCounter.CuttingSoundAndAnimation();
         _cutCoroutine = StartCoroutine(CutRoutine());
     }
 

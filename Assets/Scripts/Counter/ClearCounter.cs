@@ -18,27 +18,27 @@ public class ClearCounter : BaseCounter, IKitchenObjectParent
                 if (player.GetKitchenObject() is PlateKitchenObject plateKitchenObject)
                 {
                     if(plateKitchenObject.TryAddIngredient(GetKitchenObject().GetKitchenObjectSO))
+                    {
                         GetKitchenObject().DestroySelf();
+                    }
                 }
                 else if(GetKitchenObject() is PlateKitchenObject plateKitchenObject1)
                 {
                     if(plateKitchenObject1.TryAddIngredient(player.GetKitchenObject().GetKitchenObjectSO))
+                    {
                         player.GetKitchenObject().DestroySelf();
+                        SoundManagerScript.PlaySound(SoundManagerScript.GetAudioClipRefesSO().objectDrop, this.transform.position);
+                    }
                 }
             }
         }
         else 
         {
             if(player.HasKitchenObject())
+            {
                 player.GetKitchenObject().SetKitchenObjectParent(this);
-            // else
-            // {
-            //     if (player.GetKitchenObject() is PlateKitchenObject plateKitchenObject)
-            //     {
-            //         if(plateKitchenObject.TryAddIngredient(GetKitchenObject().GetKitchenObjectSO))
-            //             GetKitchenObject().DestroySelf();
-            //     }
-            // }
+                SoundManagerScript.PlaySound(SoundManagerScript.GetAudioClipRefesSO().objectDrop, this.transform.position);
+            }
         }
     }
     

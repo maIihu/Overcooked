@@ -41,7 +41,10 @@ public class PlatesCounter : BaseCounter, IKitchenObjectParent
         else 
         {
             if(player.HasKitchenObject())
+            {
                 player.GetKitchenObject().SetKitchenObjectParent(this);
+                SoundManagerScript.PlaySound(SoundManagerScript.GetAudioClipRefesSO().objectDrop, this.transform.position);
+            }
         }
     }
 

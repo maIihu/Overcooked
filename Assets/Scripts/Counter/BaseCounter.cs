@@ -8,7 +8,8 @@ public class BaseCounter : MonoBehaviour
     private GameObject _visualGameObject;
 
     protected Transform CounterTopPoint;
-
+    protected SoundManager SoundManagerScript;
+    
     protected virtual void Awake()
     {
         _visualGameObject = transform.Find("Selected").gameObject;
@@ -18,19 +19,14 @@ public class BaseCounter : MonoBehaviour
     protected virtual void Start()
     {
         Player.Instance.OnSelectedCounterChanged += PlayerChangeSelected;
+        SoundManagerScript = SoundManager.Instance;
         Hide();
     }
     
     private void PlayerChangeSelected(object sender, Player.OnSelectedCounterChangedEventArgs e)
     {
-        if (e.SelectedCounter == this)
-        {
-            Show();
-        }
-        else
-        {
-            Hide();
-        }
+        if (e.SelectedCounter == this) Show();
+        else Hide();
     }
     private void Show()
     {

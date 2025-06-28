@@ -18,6 +18,8 @@ public class DeliveryManager : MonoBehaviour
     private float _spawnRecipeTimer;
     private float _spawnRecipeTimerMax = 4f;
     private int _waitingRecipeMax = 4;
+    
+    private SoundManager _soundManager;
 
     private void Awake()
     {
@@ -25,9 +27,10 @@ public class DeliveryManager : MonoBehaviour
             Instance = this;
     }
 
-    public void Start()
+    private void Start()
     {
-        _waitingRecipeSOList = new List<RecipeSO>();    
+        _waitingRecipeSOList = new List<RecipeSO>();  
+        _soundManager = SoundManager.Instance;
     }
 
     private void Update()
@@ -59,9 +62,12 @@ public class DeliveryManager : MonoBehaviour
                 Debug.Log("!!!!Player delivered the correct Recipe");
                 _waitingRecipeSOList.RemoveAt(i);
                 OnRecipeCompleted?.Invoke(this, EventArgs.Empty);
+                
+                _soundManager.PlaySound(_soundManager.GetAudioClipRefesSO().deliverySuccess, this.transform.position);
                 return;
             }
         }
+        _soundManager.PlaySound(_soundManager.GetAudioClipRefesSO().deliveryFail, this.transform.position);
         Debug.Log("!!!!Player did not delivered a correct Recipe");
     }
 

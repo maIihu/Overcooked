@@ -25,12 +25,14 @@ public class StoveCounter : BaseCounter, IKitchenObjectParent, IHasProgress
 
     private GameObject _sizzlingEffect;
     private GameObject _burningEffect;
+    private AudioSource _audioSource;
 
     protected override void Awake()
     {
         base.Awake();
         _sizzlingEffect = this.transform.Find("StoveCounter_Visual/SizzlingParticles").gameObject;
         _burningEffect = this.transform.Find("StoveCounter_Visual/StoveOnVisual").gameObject;
+        _audioSource = this.GetComponentInChildren<AudioSource>();
     }
 
     protected override void Start()
@@ -44,7 +46,6 @@ public class StoveCounter : BaseCounter, IKitchenObjectParent, IHasProgress
     {
         if (HasKitchenObject())
         {
-            ShowEffect();
             switch (_state)
             {
                 case State.Idle:
@@ -96,12 +97,14 @@ public class StoveCounter : BaseCounter, IKitchenObjectParent, IHasProgress
     {
         _sizzlingEffect.SetActive(true);
         _burningEffect.SetActive(true);
+        _audioSource.Play();
     }
 
     private void HideEffect()
     {
         _sizzlingEffect.SetActive(false);
         _burningEffect.SetActive(false);
+        _audioSource.Stop();
     }
 
     public override void Interact(Player player)
@@ -143,9 +146,11 @@ public class StoveCounter : BaseCounter, IKitchenObjectParent, IHasProgress
                 var fryingRecipeSO = GetPryingRecipeSOForInput(player.GetKitchenObject().GetKitchenObjectSO);
                 if(fryingRecipeSO)
                 {
+                    SoundManagerScript.PlaySound(SoundManagerScript.GetAudioClipRefesSO().objectDrop, this.transform.position);
                     player.GetKitchenObject().SetKitchenObjectParent(this);
                     _fryingRecipeSO = fryingRecipeSO;
                     _state = State.Frying;
+                    ShowEffect();
                     _fryingTimer = 0;
                     OnProgressBarChanged?.Invoke(this, new IHasProgress.OnProgressBarChangedEventArgs()
                     {

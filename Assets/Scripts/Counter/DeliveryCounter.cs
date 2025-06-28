@@ -6,8 +6,7 @@ using Random = UnityEngine.Random;
 
 public class DeliveryCounter : BaseCounter
 {
-
-
+    
     public override void Interact(Player player)
     {
         base.Interact(player);
@@ -17,6 +16,7 @@ public class DeliveryCounter : BaseCounter
             {
                 DeliveryManager.Instance.DeliverRecipe(plateKitchenObject);
                 player.GetKitchenObject().DestroySelf();
+                SoundManagerScript.PlaySound(SoundManagerScript.GetAudioClipRefesSO().objectDrop, this.transform.position);
             }
         }
     }
