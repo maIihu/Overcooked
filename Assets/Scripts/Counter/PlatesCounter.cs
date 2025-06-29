@@ -37,6 +37,17 @@ public class PlatesCounter : BaseCounter, IKitchenObjectParent
         { // player carrying kitchen obj
             if(!player.HasKitchenObject())
                 _kitchenObject.SetKitchenObjectParent(player);
+            else
+            {
+                if(GetKitchenObject() is PlateKitchenObject plateKitchenObject1)
+                {
+                    if(plateKitchenObject1.TryAddIngredient(player.GetKitchenObject().GetKitchenObjectSO))
+                    {
+                        player.GetKitchenObject().DestroySelf();
+                        SoundManagerScript.PlaySound(SoundManagerScript.GetAudioClipRefesSO().objectDrop, this.transform.position);
+                    }
+                }
+            }
         }
         else 
         {

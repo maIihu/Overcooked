@@ -8,32 +8,32 @@ public class DeliveryManagerUI : MonoBehaviour
     [SerializeField] private Transform container;
     [SerializeField] private Transform recipeTemplate;
 
+    private Dictionary<RecipeSO, GameObject> _recipeUIMap;
+
     private void Start()
     {
+        _recipeUIMap = new Dictionary<RecipeSO, GameObject>();
         DeliveryManager.Instance.OnRecipeSpawned += DeliveryManager_OnRecipeSpawned;
-        DeliveryManager.Instance.OnRecipeCompleted += DeliveryManager_OnRecipeCompleted;
+        DeliveryManager.Instance.OnRecipeDestroy += DeliveryManagerOnRecipeDestroy;
     }
 
-    private void DeliveryManager_OnRecipeCompleted(object sender, EventArgs e)
+    private void DeliveryManager_OnRecipeSpawned(object sender, DeliveryManager.RecipeSpawnedEventArgs e)
     {
-        UpdateVisual();
+        Transform recipeTransform = Instantiate(recipeTemplate, container);
+        var ui = recipeTransform.GetComponent<DeliveryManagerSingleUI>();
+        ui.SetRecipe(e.waitingRecipe.recipeSO);
+
+        // Gán UI vào lại chính instance WaitingRecipe
+        e.waitingRecipe.uiObject = recipeTransform.gameObject;
     }
 
-    private void DeliveryManager_OnRecipeSpawned(object sender, EventArgs e)
+
+    private void DeliveryManagerOnRecipeDestroy(object sender, DeliveryManager.RecipeSpawnedEventArgs e)
     {
-        UpdateVisual();
+        // if (_recipeUIMap.TryGetValue(e.recipeSO, out GameObject recipeGO))
+        // {
+        //     Destroy(recipeGO);
+        //     _recipeUIMap.Remove(e.recipeSO);
+        // }
     }
-
-    private void UpdateVisual()
-    {
-        foreach(Transform child in container)
-            Destroy(child.gameObject);
-
-        foreach (RecipeSO recipeSO in DeliveryManager.Instance.GetWaitingRecipeSOList())
-        {
-            Transform recipeTransform = Instantiate(recipeTemplate, container);
-            recipeTransform.GetComponent<DeliveryManagerSingleUI>().SetRecipeText(recipeSO);
-        }
-    }
-    
 }

@@ -16,4 +16,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 55c7e3eb95bec244fa37367ba21d0b96, type: 2}
   - {fileID: 11400000, guid: 6ddc43d63e80f944cb95207d5bc844f5, type: 2}
   - {fileID: 11400000, guid: a256cb3ea87f1354b9e146015b91e35c, type: 2}
-  recipeName: Cheese Burger
+  countDownTimer: 30

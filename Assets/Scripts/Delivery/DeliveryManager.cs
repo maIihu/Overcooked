@@ -8,13 +8,33 @@ using Random = UnityEngine.Random;
 public class DeliveryManager : MonoBehaviour
 {
     public static DeliveryManager Instance { get; private set; }
+    
+    public class RecipeSpawnedEventArgs : EventArgs
+    {
+        public WaitingRecipe waitingRecipe;
 
-    public event EventHandler OnRecipeSpawned;
-    public event EventHandler OnRecipeCompleted;
+    }
+    public event EventHandler<RecipeSpawnedEventArgs> OnRecipeSpawned;
+    public event EventHandler<RecipeSpawnedEventArgs> OnRecipeDestroy;
+
+    public class WaitingRecipe
+    {
+        public RecipeSO recipeSO;
+        public float timer;
+        public GameObject uiObject; 
+
+        public WaitingRecipe(RecipeSO recipeSO)
+        {
+            this.recipeSO = recipeSO;
+            this.timer = recipeSO.countDownTimer;
+        }
+    }
     
     [SerializeField] private RecipeListSO recipeListSO;
 
-    private List<RecipeSO> _waitingRecipeSOList;
+    private List<WaitingRecipe> _waitingRecipeList;
+
+
     private float _spawnRecipeTimer;
     private float _spawnRecipeTimerMax = 4f;
     private int _waitingRecipeMax = 4;
@@ -29,7 +49,7 @@ public class DeliveryManager : MonoBehaviour
 
     private void Start()
     {
-        _waitingRecipeSOList = new List<RecipeSO>();  
+        _waitingRecipeList = new List<WaitingRecipe>();
         _soundManager = SoundManager.Instance;
     }
 
@@ -39,40 +59,79 @@ public class DeliveryManager : MonoBehaviour
         if (_spawnRecipeTimer <= 0f)
         {
             _spawnRecipeTimer = _spawnRecipeTimerMax;
-            if(_waitingRecipeSOList.Count < _waitingRecipeMax)
+            if(_waitingRecipeList.Count < _waitingRecipeMax)
             {
-                var waitingRecipeSO = recipeListSO.recipeSOList[Random.Range(0, recipeListSO.recipeSOList.Count)];
-                Debug.Log("Wait for " + waitingRecipeSO.name);
-                _waitingRecipeSOList.Add(waitingRecipeSO);
-                
-                OnRecipeSpawned?.Invoke(this, EventArgs.Empty);
+                var recipeSO = recipeListSO.recipeSOList[Random.Range(0, recipeListSO.recipeSOList.Count)];
+                var waitingRecipe = new WaitingRecipe(recipeSO);
+                _waitingRecipeList.Add(waitingRecipe);
+
+                OnRecipeSpawned?.Invoke(this, new RecipeSpawnedEventArgs
+                {
+                    waitingRecipe = waitingRecipe
+                });
+
             }
         }
+        
+        for (int i = _waitingRecipeList.Count - 1; i >= 0; i--)
+        {
+            _waitingRecipeList[i].timer -= Time.deltaTime;
+
+            if (_waitingRecipeList[i].timer <= 0f)
+            {
+                var expiredRecipe = _waitingRecipeList[i];
+                Debug.Log("Hết thời gian: " + expiredRecipe.recipeSO.name);
+
+                Destroy(expiredRecipe.uiObject); 
+                _waitingRecipeList.RemoveAt(i);
+
+                OnRecipeDestroy?.Invoke(this, new RecipeSpawnedEventArgs
+                {
+                    waitingRecipe = expiredRecipe
+                });
+            }
+
+        }
+
+
     }
 
     public void DeliverRecipe(PlateKitchenObject plateKitchenObject)
     {
-        for (int i = 0; i < _waitingRecipeSOList.Count; i++)
+        for (int i = 0; i < _waitingRecipeList.Count; i++)
         {
-            RecipeSO waitingRecipeSO = _waitingRecipeSOList[i];
+            RecipeSO waitingRecipeSO = _waitingRecipeList[i].recipeSO;
             var waitingRecipeList = waitingRecipeSO.kitchenObjectSOList;
             var kitchenPlateList = plateKitchenObject.GetKitchenObjectSOs();
-            if (waitingRecipeList.Count == kitchenPlateList.Count && !waitingRecipeList.Except(kitchenPlateList).Any())
+
+            if (waitingRecipeList.Count == kitchenPlateList.Count &&
+                !waitingRecipeList.Except(kitchenPlateList).Any())
             {
                 Debug.Log("!!!!Player delivered the correct Recipe");
-                _waitingRecipeSOList.RemoveAt(i);
-                OnRecipeCompleted?.Invoke(this, EventArgs.Empty);
-                
+
+                Destroy(_waitingRecipeList[i].uiObject);
+
+                var deliveredRecipe = _waitingRecipeList[i];
+                _waitingRecipeList.RemoveAt(i);
+
+                OnRecipeDestroy?.Invoke(this, new RecipeSpawnedEventArgs
+                {
+                    waitingRecipe = deliveredRecipe
+                });
+
                 _soundManager.PlaySound(_soundManager.GetAudioClipRefesSO().deliverySuccess, this.transform.position);
                 return;
             }
         }
+
         _soundManager.PlaySound(_soundManager.GetAudioClipRefesSO().deliveryFail, this.transform.position);
-        Debug.Log("!!!!Player did not delivered a correct Recipe");
+        Debug.Log("!!!!Player did not deliver a correct Recipe");
     }
+
 
     public List<RecipeSO> GetWaitingRecipeSOList()
     {
-        return _waitingRecipeSOList;
+        return _waitingRecipeList.Select(r => r.recipeSO).ToList();
     }
+
 }

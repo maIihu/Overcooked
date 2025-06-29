@@ -15,4 +15,4 @@ MonoBehaviour:
   kitchenObjectSOList:
   - {fileID: 11400000, guid: ab7328f3de127864d93a3b64c4abf51f, type: 2}
   - {fileID: 11400000, guid: 14e51d4ef1ae58d4f8162123f478bafa, type: 2}
-  recipeName: Salad
+  countDownTimer: 30

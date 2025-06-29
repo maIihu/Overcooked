@@ -112,7 +112,7 @@ public class Player : MonoBehaviour, IKitchenObjectParent
         if (moveDir != Vector3.zero)
             _lastInteractDir = moveDir;
 
-        float interactDistance = 2f;
+        float interactDistance = 1f;
         float sphereRadius = 0.5f;
 
         if (Physics.SphereCast(transform.position, sphereRadius, 
@@ -128,11 +128,13 @@ public class Player : MonoBehaviour, IKitchenObjectParent
                     SoundManager.Instance.PlaySound(SoundManager.Instance.GetAudioClipRefesSO().objectPickup, this.transform.position);
                 }
                 
-                if (Input.GetKeyDown(KeyCode.R) && _moveInput == Vector2.zero)
+                if (_selectedCounter == baseCounter &&
+                    Input.GetKeyDown(KeyCode.R) && _moveInput == Vector2.zero)
                 {
-                    if(baseCounter is  CuttingCounter cuttingCounter)
+                    if (baseCounter is CuttingCounter cuttingCounter && cuttingCounter.HasKitchenObject())
                         StartCutting(cuttingCounter);
                 }
+
                 
                 //if (Input.GetKey(KeyCode.R)) baseCounter.InteractAlternate(this);
             }
@@ -188,7 +190,6 @@ public class Player : MonoBehaviour, IKitchenObjectParent
     }
 
     #endregion
-
     
     #region IKitchenObjectParent
 

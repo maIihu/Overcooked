@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -6,13 +7,28 @@ using UnityEngine.UI;
 
 public class DeliveryManagerSingleUI : MonoBehaviour
 {
-    [SerializeField] private TextMeshProUGUI recipeText;
     [SerializeField] private Transform iconContainer;
     [SerializeField] private Transform iconTemplate;
+    [SerializeField] private Image barImage;
 
-    public void SetRecipeText(RecipeSO recipeSO)
+    private float _countDownTimer;
+    private float _countDownTimerMax;
+
+    private void Update()
     {
-        recipeText.text = recipeSO.recipeName;
+        _countDownTimer -= Time.deltaTime;
+        barImage.fillAmount = _countDownTimer / _countDownTimerMax;
+        if (_countDownTimer <= 0f)
+        {
+            _countDownTimer = 0f;
+            // TODO: xử lý hết thời gian (ví dụ: hủy đơn hàng)
+        }
+
+    }
+
+    public void SetRecipe(RecipeSO recipeSO)
+    {
+        Debug.Log("Goi");
         foreach (Transform child in iconContainer)
             Destroy(child.gameObject);
         
@@ -21,5 +37,8 @@ public class DeliveryManagerSingleUI : MonoBehaviour
             Transform iconTransform = Instantiate(iconTemplate, iconContainer);
             iconTransform.GetComponent<Image>().sprite = kitchenObjectSO.sprite;
         }
+
+        _countDownTimer = _countDownTimerMax = recipeSO.countDownTimer;
+        
     }
 }
