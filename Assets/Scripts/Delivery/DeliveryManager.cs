@@ -8,7 +8,6 @@ using Random = UnityEngine.Random;
 public class DeliveryManager : MonoBehaviour
 {
     public static DeliveryManager Instance { get; private set; }
-    
     public class RecipeSpawnedEventArgs : EventArgs
     {
         public WaitingRecipe waitingRecipe;
@@ -16,6 +15,9 @@ public class DeliveryManager : MonoBehaviour
     }
     public event EventHandler<RecipeSpawnedEventArgs> OnRecipeSpawned;
     public event EventHandler<RecipeSpawnedEventArgs> OnRecipeDestroy;
+    
+    public event EventHandler OnRecipeSuccess;
+    public event EventHandler OnRecipeFailed;
 
     public class WaitingRecipe
     {
@@ -84,7 +86,9 @@ public class DeliveryManager : MonoBehaviour
 
                 Destroy(expiredRecipe.uiObject); 
                 _waitingRecipeList.RemoveAt(i);
-
+                
+                OnRecipeFailed?.Invoke(this,EventArgs.Empty);
+                
                 OnRecipeDestroy?.Invoke(this, new RecipeSpawnedEventArgs
                 {
                     waitingRecipe = expiredRecipe
@@ -92,8 +96,6 @@ public class DeliveryManager : MonoBehaviour
             }
 
         }
-
-
     }
 
     public void DeliverRecipe(PlateKitchenObject plateKitchenObject)
@@ -113,7 +115,9 @@ public class DeliveryManager : MonoBehaviour
 
                 var deliveredRecipe = _waitingRecipeList[i];
                 _waitingRecipeList.RemoveAt(i);
-
+                
+                OnRecipeSuccess?.Invoke(this,EventArgs.Empty);
+                
                 OnRecipeDestroy?.Invoke(this, new RecipeSpawnedEventArgs
                 {
                     waitingRecipe = deliveredRecipe

@@ -9,18 +9,17 @@ public class KitchenGameManager : MonoBehaviour
 
     public enum GameState
     {
-        WaitingToStart, CountdownToStart, GamePlaying, GameOver, Pause
+        GamePlaying, GameOver, Pause
     }
     
     [SerializeField] private GameObject gameOverUI;
     [SerializeField] private GameObject pauseUI;
     
     private GameState _currentState;
-
-    private float _waitingToStartTimer = 1f;
-    private float _countdownToStartTimer = 1f;
-    private float _gamePlayingToStartTimer = 1f;
-
+    
+    private float _gamePlayingTimer;
+    private float _gamePlayingTimerMax = 10f;
+    
     private void Awake()
     {
         if (Instance == null) Instance = this;
@@ -32,6 +31,7 @@ public class KitchenGameManager : MonoBehaviour
         gameOverUI.SetActive(false);
         pauseUI.SetActive(false);
         ChangeState(GameState.GamePlaying);
+        _gamePlayingTimer = _gamePlayingTimerMax;
     }
 
     private void Update()
@@ -40,6 +40,16 @@ public class KitchenGameManager : MonoBehaviour
         {
             ChangeState(GameState.Pause);
         }
+        
+        if(_currentState == GameState.GamePlaying)
+        {
+            _gamePlayingTimer -= Time.deltaTime;
+            if (_gamePlayingTimer <= 0f)
+            {
+                ChangeState(GameState.GameOver);
+                gameOverUI.SetActive(true);
+            }
+        }
     }
 
     public void ChangeState(GameState newState)
@@ -47,7 +57,7 @@ public class KitchenGameManager : MonoBehaviour
         _currentState = newState;
         ApplyState();
     }
-
+    
     private void ApplyState()
     {
         switch (_currentState)
@@ -63,9 +73,11 @@ public class KitchenGameManager : MonoBehaviour
                 Time.timeScale = 0f;
                 gameOverUI.SetActive(true);
                 break;
-            
         }
+    }
 
-        
+    public float GetPlayingTimerNormalized()
+    {
+        return 1 - _gamePlayingTimer / _gamePlayingTimerMax;
     }
 }
